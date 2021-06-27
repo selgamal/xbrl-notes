@@ -1,0 +1,44 @@
+---
+title: "XBRL Training"
+author: "Sherif M ElGamal"
+date: "6/22/2021"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+**Sherif Mahmoud ElGamal**  
+
+- CPA, CMA, CIA  
+- Individual XBRL Certification  
+  
+- Areas of expertise:
+  - Audit and Advisory
+  - Data analytics
+  - selgamal@outlook.com
+
+
+## Slide with Bullets
+
+-   Bullet 1
+-   Bullet 2
+-   Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```

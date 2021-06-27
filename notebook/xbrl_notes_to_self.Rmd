@@ -1,0 +1,875 @@
+---
+title: "XBRL - What is it?"
+subtitle: | 
+      | An overview of XBRL US [**_XBRL Taxonomy Development Handbook ("TDH")_**](https://xbrl.us/xbrl-reference/tdh/)
+output:  
+  html_notebook:  
+    theme: flatly
+    highlight: haddock  
+    toc: yes  
+    toc_float:
+      collapsed: false 
+    toc_depth: 5
+    number_sections: yes 
+    code_folding: none 
+    fig_caption: yes
+---
+<style>
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    font-size: 1.2em!important;
+    border-left: 5px solid #eee;
+}
+#TOC {
+font-size: small;
+white-space: nowrap;
+}
+pre code {
+white-space: pre;
+}
+pre {
+max-height: 350px;
+}
+.sourceCode {
+    overflow: auto;
+}
+body {
+text-align: justify;}
+blockquote {
+    font-size: inherit;
+    font-style: oblique;
+}
+</style>
+***
+```{r setup,  echo=FALSE, message=FALSE, include=FALSE}
+library(tidyverse)
+here::i_am('notebook/xbrl_notes_to_self.Rmd')
+source(here::here('R', 'helperFunctions.R'))
+options(width = 200)
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+Structured financial reporting is latest and greatest method of exchanging financial data and reports. The use of XBRL is expanding allover the world, and it is becoming the standard method for exchanging structured financial reports. 
+
+The objective of this document is to provide the reader with a basic understanding of _what XBRL is_, _what it does_, and _how it is implemented_.
+
+Parts of this material depends heavily, and refers to the [**_XBRL Taxonomy Development Handbook_**](https://xbrl.us/xbrl-reference/tdh/) published by [XBRL US](https://xbrl.us/) and publicly available on the their website. As mentioned in the preface of the handbook, it was created as a guide for creating XBRL taxonomies based on XBRL US experience, which makes it a very valuable resource for anyone or organization interested in implementation of XBRL.
+
+# Outcomes  
+
+This material should provide:  
+
+* Basic understanding of XBRL and its components  
+* Familiarity with core terminology and what it refers to  
+* Basic understanding of Taxonomy and instance document  
+* Basic understanding of the process of development of an XBRL taxonomy and structured reporting process  
+* Understanding the ecosystem of structured financial reporting and the supporting technologies  
+
+# Back in time  
+
+To explain the most basic concept of XBRL we need to take a trip back in time, to the ancient Egyptian writings.
+
+[![](https://upload.wikimedia.org/wikipedia/commons/a/a3/Birth_and_Throne_cartouches_of_pharaoh_Seti_I%2C_from_KV17_at_the_Valley_of_the_Kings%2C_Egypt._Neues_Museum.jpg){width=30% height=30%}](https://en.wikipedia.org/wiki/Cartouche){target=_blank}  
+<sub>_[Image by Osama Shukir Muhammed Amin FRCP(Glasg), CC BY-SA 4.0 <https://creativecommons.org/licenses/by-sa/4.0>, via Wikimedia Commons]_<sub>
+
+In the image above we see some writing encapsulated in an oval shape called "Cartouche", according to the common understanding, this means that the encapsulated writing represents a royal name. The ancient Egyptians choose this method to draw the attention to the information by marking or "tagging" this important information by the oval shape.
+
+XBRL does the same thing, it is _tagging_ important financial information included in a report, in the case of XBRL, this tagging has consequences when the information is processed by a computer.
+
+
+# Why XBRL and what is it exactly?
+
+__XBRL__ stands for _eXtensible Business Reporting Language_, and it is usually described in terms of what it does, in brief, XBRL provides standards for storing and electronic communication of financial information enabling efficient processing, storage, retrieval, analysis and comparison of the information. 
+
+The increase in size of data and regulatory requirements derives the need for more efficient and structured methods to handle all this data and make convert it into a resource rather than a burden. 
+
+## Who uses XBRL?  
+
+The XBRL Taxonomy Development Handbook in page 6 lists successful implementation of XBRL around the worlds, that includes:
+
+* **United States**: Stock exchange commission (SEC), and Financial Depository Insurance Corporation (FDIC) with total reporting entities of over 17,500  
+* **United Kingdom**: Her Majesty’s Revenues & Customs (HMRC), and Companies House with reporting entities of over 2 million  
+* **Spain**: Business Registrar, Banking Regulator, Securities Regulation, Accounting Oversight and State Federal Comptroller with reporting entities of over 800,000  
+
+* **Others**: Europe (European Single Electronic Format ESEF), India, Singapore, South Korea, Italy, Peru, World bank and many others  
+
+* **Governments and government agencies **allover the world are using XBRL, countries like **Netherlands** and **Australia** implemented [**Standard Business Reporting (SBR) programs**](https://en.wikipedia.org/wiki/Standard_Business_Reporting) which are programs designed to reduce regulatory burden for businesses and relys heavily on XBRL.
+
+Currently XBRL international website lists [more than 20 XBRL jurisdictions](https://www.xbrl.org/the-consortium/about/jurisdictions/) (a jurisdiction is a local representative for XBRL  acting as the primary liaison to national government, technology firms and business communities)
+
+## How do we collect financial data
+
+```{r changes_in_data_collection, echo=FALSE, fig.cap='How we collect Data'}
+DiagrammeR::grViz("
+
+digraph with_title {
+
+  graph [splines=ortho, rankdir=LR, label='Changes in how we collect data']
+  
+  node [shape=box, style='filled', color=transparent, fillcolor='#f5f5f5', fontname=Helvetica, fontcolor='#2c3e50']
+  
+  a[label='Paper Bases Submissions']; 
+  b[label='Computer Disc']; 
+  c[label='Preformatted Dynamic Input forms']; 
+  d[label='Web Based Portals']; e[label=XBRL]
+  
+  edge[color='#242424', penwidth=0.2]
+  
+  a -> b -> c -> d -> e
+}                 
+", height="100%", width="100%")
+```
+
+
+The methods and processes of financial data collection evolved over time, we started with paper based submissions, then computer discs, then electronic submissions through web based portals. XBRL is the next new thing in this evolution, and it adds value in a lot of ways such as:  
+
+  * It provides for a stable structure of the data content  
+  * It separates data content from the form of the submission 
+  * Provide for automation, which increases accuracy, cost and time savings  
+  
+And many more benefits relating to the quality and richness of that data that we will look into later.
+
+## Current issues that XBRL addresses
+
+As mentioned, XBRL provides for structured contextually rich machine readable data, which allows for automation, and that address most of the main data issues in general, for regulators and for issuers.
+
+**General Issues:**  
+
+* Machine Readable: reports with XBRL tagging can be consumed and analyzed by computers through XBRL enabled software (XBRL Processors) as opposed to paper based or unstructured reports.   
+* Interoperability: XBRL is self-describing and uses XML syntax which makes the information in XBRL system independent, in other words, the same XBRL information package can be consumed by any system that has XBRL enabled software, which addresses _compatibility_ issues.  
+* It provides for a common set of rules that can be used in exchanging any financial information, hence it provides a common language for exchanging data, addressing _comparability_ issues.    
+* XBRL provides for automated means of compiling, transmitting, validating and analyzing financial data, which increase _efficiency_, time and cost saving and at the same time increasing quality of data.  
+* XBRL provides high quality, contextually rich financial data rather than _fragmented_ data.  
+* XBRL is free and opensource standard, with no licensing fees, addresses issues of propitiatory standards and software, it should be noted that XBRL enabled software is not free.
+
+
+**Regulator Issues**:  
+
+* High volumes of data and reports: as mentioned, XBRL provides for automation in collecting and processing data, which facilitates handling high volumes in an accurate and efficient manner.  
+* Review and validation: XBRL give financial report a structure that enable creation of validation rules based on regulations, business rules and any other criteria, and that in turn enables quick corrective action to be taken when needed.    
+* Data can be stored for cross checking and further analysis and comparison.  
+* Single source of the truth, XBRL structure allows data to be used for many purposes, for example, same report can contain data structures required for a regulator, census, taxes ...
+
+**Issuer Issues**:  
+
+* Simplifies the compilation of reports required by multiple regulators from the same dataset.    
+* XBRL taxonomies and the related guides issued by regulators provide for clear and unambiguous reporting requirements, and simplifies compliance.  
+* Reduces the chance of costly errors.
+  
+  
+  
+**Why XBRL?** In short, it addresses most current issues relating to exchange of financial data, it is widely used allover the world, and it is simply the next step in the evolution of financial data exchange systems.
+
+## What is Extensible Business Reporting Language (XBRL)?
+
+**The Specifications**   
+Technically XBRL is based on __XML__ _(eXtensible Markup Language)_, it can be said that **XBRL is an XML extension** optimized to deal with business information. In other words,  XBRL does what it does by being based on  XML.  
+
+[XBRL is a set of specifications](https://specifications.xbrl.org/specifications.html) developed and maintained by [XBRL International](https://www.xbrl.org/). The base XBRL specification (now version 2.1) is stable since 2003, with additional specifications being added to augment it such as XBRL Dimensions.  
+
+XBRL specification are freely available without licensing, note that this doesn't apply for XBRL enabled software which might have licensing fees. 
+
+**Data Model**  
+XBRL specifications are tools that enables the definition of  dictionaries, data models and rules called **XBRL Taxonomies**, also XBRL specifications provide the tools to create structured financial reports based on XBRL Taxonomies, these financial reports are called **XBRL Instances**.  
+
+So we can say that XBRL is the set of tools used to create data models and structures that are the basis for structured financial reporting. 
+
+
+**Communication Language**  
+The purpose of XBRL is to enable exchange of structured financial data between systems, some times the term "transport model" is used to refer to XBRL. 
+
+> "A _Transport Model_  serves as an organizational structure when moving data from a source to a consumer" `r tufte::quote_footer('--- [TDH section 2.1.2 page 10](https://xbrlus.github.io/docs/tdh.html)')`
+
+
+Understand XBRL and how it does what it does, start with XML, in the next section we will go through some of XML concepts that are relevant to understanding XBRL.
+
+## XML and markup languages  
+
+Markup languages in general tags the content of a file or a document in a way that makes it machine readable, i.e. when processed by a computer, the tags tell the computer what to do with the content.  
+
+Markup languages has different purposes, for example **Hyper Text Markup Language ("HTML")** tags tell the computer how to display the content, while few of the main purposes of **XML** is to store, organize and transport content between systems.
+
+Markup languages are usually system independent, for example all systems have tools to read and parse XML, in other words, an XML file created in a Windows system can be read an parsed by a Linux based system.  
+
+
+## XML Basics  
+
+As mentioned XML is a markup language, and it is a set of specifications, rules and tools for describing, storing, and transporting data between systems.
+
+Assume that we want to encode a table of invoices into XML, a fragment of that XML might look as follows:
+
+```xml
+<table> 
+  <invoice CustomerName="abc" 
+           InvoiceNum="101">589.91
+  </invoice>
+</table>
+```
+### XML Form
+XML document is composed of elements, each element starts with an opening tag and ends with a closing tag, there can be values or other elements within the opening and closing tags. The XML structure is in the form of a tree, having a root element containing all other elements.  
+
+`<table>` and `</table>` in the above XML fragment are the opening and closing <code style="color: red; font-weight: bold;">tags</code> of the root element called `table`. In the above fragment, the root element has only one child element called `invoice`. The invoice opening tag contains other information in the form of key, value pairs `customerName="abc", invoiceNum=101`, these are called <code style="color: red; font-weight: bold;">attributes</code>, which attaches more information about the element. finally we have a value `589.91` between the `invoice` opening and closing tag, in this case representing the invoice amount. 
+
+To be usable, XML must be well formed XML, a well formed XML has the following:  
+
+* All XML elements must be contained in one root element  
+* Each element must have an opening and closing tag  
+* Elements must be properly nested
+* Attributes must be quoted 
+
+For more about XML well formedness [see W3Schools XML Tutorial](https://www.w3schools.com/xml/xml_validator.asp){target="_blank"}  
+
+### Storing Data in XML  
+Let's assume we have a table of invoices that we need to store in XML format and send over to another computer, first let's construct the table:  
+
+```{r example_1_tbl, results='hold'}
+# Generate a table, same as previous test but 50 rows
+set.seed(42)
+# Number of rows in the table
+table_rows <- 10 
+# Customer names
+customer_names <- c("abc", "mno","xyz")
+# Data frame
+tbl_1 <- data.frame(
+  CustomerName = sample(customer_names, table_rows, replace = T),
+  InvoiceNum = sort(sample(100:999, table_rows)),
+  InvoiceDate = sort(sample(seq(as.Date('2000-01-01'), 
+                                as.Date('2000-12-31'), 
+                                by="day"), table_rows)
+                     ),
+  InvoiceCurrency = rep("CU",table_rows),
+  InvoiceAmt = round(runif(table_rows, min = 100, max = 1000),2), stringsAsFactors = F)
+
+# Display first few rows of the data.frame
+head(tbl_1)
+```
+Now let's convert that table to XML format:  
+```{r example_1_make_xml, results='hold'}
+# This code converts the invoices table to an XML document 
+# and saves it to file
+
+# Create xml root element
+xml_root <- xml2::xml_new_root('table')
+
+# Attach each row of the table as an <invoice> element
+for(r in asplit(tbl_1,1)) {
+  nd <- xml2::xml_add_child(xml_root, 'invoice')
+  for(r_n in names(r)){
+    xml2::xml_add_child(.x=nd, .value = r_n, r[[r_n]] )
+  }
+}
+
+# Write the xml document to file
+xml_out_tbl_1 <- here::here('xml_files','xml_out.xml')
+invisible(xml2::write_xml(xml_root, xml_out_tbl_1))
+```
+
+The resulting XML file looks like this:  
+```{r example_1_show_xml, echo=FALSE}
+# read and display the xml file
+output <- fn_CodeChunkOut(lang = "XML", File = xml_out_tbl_1)
+output
+```
+
+
+Examining the resulting XML file, each `<invoice>` element has 5 child elements representing information about each invoice, with each of those child elements storing the information as its value. Now if the focus of this table/report is on the invoice amount `invoiceAmt`, then it might be better to have the invoice amount information as the only value, and everything else might be better represented as an attribute. Attributes usually give additional contextual information about the element and its value, we may call those attributes aspects or even dimensions. So let's try to rewrite the XML in a different way to reflect this:
+```{r example_2_make_xml, results='hold'}
+# Re-write the xml file with attributes
+
+# create root element for the new XML
+xml_root_2 <- xml2::xml_new_root('table')
+
+# define children with attributes
+for(r in asplit(tbl_1,1)) {
+  nd <- xml2::xml_add_child(xml_root_2, 'invoice', r[[length(r)]])
+  for(r_n in names(r)){
+    xml2::xml_attrs(nd) <- r[-length(r)]
+  }
+}
+
+# Write the xml document to file
+xml_out_tbl_2 <- here::here('xml_files','xml_out_2.xml')
+invisible(xml2::write_xml(xml_root_2, xml_out_tbl_2))
+```
+
+The resulting New XML file looks like this:  
+```{r example_2_show_xml, echo=FALSE}
+# read and display the xml file
+output_2 <- fn_CodeChunkOut(lang = "XML", File = xml_out_tbl_2)
+output_2
+```
+
+Now that we have modeled our information in an acceptable form, we can try to re-construct the table from the XML, here I am using Rscript `xml2` library to do that, but it can be done on any system that is capable of parsing XML files:
+```{r example_2_make_tbl, results='hold'}
+# Read xml file
+xml_tbl <- xml2::read_xml(xml_out_tbl_2)
+
+# find all invoice elements
+invoices <- xml2::xml_find_all(xml_tbl, './/invoice')
+values <- xml2::xml_find_all(xml_tbl, './/invoice/text()') %>% xml2::as_list() %>% unlist()
+
+# extract invoice attributes and values from all elements and convert to a dataframe
+xml_to_tbl <- xml2::xml_attrs(invoices) %>% bind_rows() %>% 
+  mutate(InvoiceAmt= as.double(values)) %>% as.data.frame()
+# Correct data types
+xml_to_tbl$InvoiceNum <- as.integer(xml_to_tbl$InvoiceNum)
+xml_to_tbl$InvoiceDate <- as.Date(xml_to_tbl$InvoiceDate)
+head(xml_to_tbl)
+# Compare result of conversion to original table
+paste("Matches Original: ", all_equal(xml_to_tbl, tbl_1)) # Should return TRUE
+
+```
+
+### XML Schema, Namespaces and Validation  
+As mentioned, XML is used to transport information between systems, and that an XML document is created, the next step will be to send to the destination system. But an important question arises, how do we make sure that the destination/receiving system is able to handle and verify the information in our document correctly? For example, the root element in the example document is called `table`, what should be expected to be included in a table element? Is it a table of invoices, or is it a table a piece of furniture?  
+
+To address the above questions, XML has mechanisms whereby elements in an XML document can be described and verified, these is mechanisms mainly depend on __schema__ and __namespaces__.  
+
+__Schema__ Is a component of XML ([W3C recommendation](https://www.w3.org/XML/Schema)) used to describe and validate elements in an XML document. Schema can be described as the blueprint of vocabulary used, what and how data is stored in an XML file, there are different schema languages such as Document Type Definitions (DTDs), Relax-NG, Schematron and W3C XSD (XML Schema Definitions). The focus will be on XSD as this is the Schema language used in XBRL.  
+
+__Namespaces__ Is a component of XML ([W3C recommendation](https://www.w3.org/TR/xml-names/)) used for providing uniquely named elements and attributes in an XML document. XML document may contain elements from multiple vocabularies (schema), namespaces help in uniquely identifying elements from different vocabularies having identical names. A namespace takes the form of a URI, for example `http://mynamespace.com/1/1`. A namespace prefix can be declared in an XML document to refer to specific namespace using `xmlns` attribute, for example  `xmlns:myns=http://mynamespace.com/1/1`.    
+
+
+Following with the invoices table example, a schema was created for this report (using any schema creation software), the schema insures the following:  
+
+* Namespace `http://myproject.com/test2/1` was given to refer to the vocabulary of the schema  
+* The root element is called `table` and contains one or more `invoice` element  
+* Each invoice element is required to have a specific set of attributes as follows:  
+  + `InvoiceNum` of data type positive integer
+  + `InvoiceDate` of data type date  
+  + `InvoiceCurrency` a string that can be either "CU" or "CX"  
+  + `CustomerName` of data type string
+  + Finally invoice value must be a positive number or 0  
+  
+Schema file is as follows:
+```{r disblay_schema_file, echo=FALSE}
+fn_CodeChunkOut(lang='XML', File=here::here('xml_files', 'example_2_schema2.xsd'))
+```
+
+Now we need to change our XML file to reference the schema, that is done using the `xmlns` attribute and giving it a namespace prefix of 'inv', and providing the location of the schema file using `xs:schemaLocation` attribute, not that the later attribute is from `xs=http://www.w3.org/2001/XMLSchema-instance` namespace. The new file with the schema reference is named `xml_out_2_schema.xml` and and the relevant part of it looks as follows:  
+
+```xml
+<inv:table xmlns:inv="http://myproject.com/test2/1" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
+	xs:schemaLocation="http://myproject.com/test2/1 example_2_schema2.xsd">
+```
+**Validation with no errors**
+Before processing the XML file, the receiving computer will always validate the XML file against the referenced schema, we can do that here using Rscript `xml2::xml_validate()` function as follows:  
+```{r test_2_validate_0,  results='hold'}
+# Read XML instance and schema
+inst <- xml2::read_xml(here::here("xml_files","xml_out_2_schema.xml"))
+schema <- xml2::read_xml(here::here("xml_files","example_2_schema2.xsd"))
+
+# Validate XML instance against the schema
+xml2::xml_validate(inst,schema)
+```
+Validating the first file returns `TRUE` with 0 errors, meaning that the file is valid according to the schema. 
+
+**Validation with Errors**  
+Now let's change the file and test if the validation will detect the errors. We create a new file called `xml_out_2_schema_errors.xml`, and we change it to as follows:  
+
+1. For the first invoice remove `CustomerName` attribute  -> test missing attributes are detected
+2. For the second invoice change `InvoiceNum` value to string `ix`-> test inconsistent attribute datatype is detected  
+3. For the third invoice change `InvoiceCurrency` value to `XZ` -> test only valid currency choices are allowed  
+4. in the fourth invoice change the value from `133.69` to `-133.69` -> test if only positive invoice amount values are allowed.  
+
+Then we run the validation again on the modified file, we should get an error this time:  
+```{r test_2_validate_1,  results='hold'}
+# Read XML instance and schema",
+inst_err <- xml2::read_xml(here::here("xml_files","xml_out_2_schema_errors.xml"))
+schema <- xml2::read_xml(here::here("xml_files","example_2_schema2.xsd"))
+
+# Validate XML instance against the schema
+xml2::xml_validate(inst_err,schema)
+
+```
+As shown above, a simple XML validator (xml2) detected all the errors and reported them.  
+
+### XLink and XPointer  
+Another component that XML provides is XLink and XPointer, these components can be used to link other components within XML or link to external resources.  
+
+__XLink__ is a [W3C recommendation](https://www.w3.org/TR/xlink11/) some what like hyperlink in HTML: 
+
+> XML Linking Language (XLink) Version 1.1, which allows elements to be inserted into XML documents in order to create and describe links between resources. It uses XML syntax to create structures that can describe links similar to the simple unidirectional hyperlinks of today's HTML, as well as more sophisticated links. `r tufte::quote_footer('--- [W3.org XLink recommendation](https://www.w3.org/TR/xlink11/#abstract)')`  
+
+__XPointer__ is a [W3C recommendation](https://www.w3.org/TR/xptr/) is a contstruct that allows for allocating specific fragment within XML.  
+
+It is important to keep in mind that XML and its components are just instructions, they do nothing other than transporting information. For the XLink and XPointer components to have an effect, it needs to be processed by an XML processor.
+
+**XLink and XPointer Example**  
+There is no browser support for XML XLink, but the best way to simulate it and understand the idea of XLink and XPointer is to use hyperlinks,  Click this link: [https://www.w3.org/TR/xlink11/#abstract](https://www.w3.org/TR/xlink11/#abstract){target=_blank}  
+
+We should be taken to the XLink recommendation on the W3C website at the location of `Abstract`, what happened here is that the browser recognized the hyperlink (XLink) and then the locator given after the `#` symbol (XPointer) and executed the instructions, and in this case the instructions was to open the website at the specificed location, so we were able to link form this page to another external page. In XML XLink works the same way, it links elements to other elements, or external resources with specific instructions based on the attributes and types of links used.
+
+XBRL uses XLinks extensively to link its components, and we will go into this in details later, for now let's just be familiar with the concept of XLink and XPointer.
+
+
+### Conclusion  
+XML as language and standards that provides for:  
+* Flexibility in data modeling  
+* Mechanisms for creating vocabularies (dictionaries)  
+* Mechanisms to validate XML content  
+* Mechanisms to link internal and external components
+
+In addition to the above, XML is a stable and widely used language, and all that made XML suitable for the
+objectives of XBRL.  
+
+
+## How Does XBRL Represent Data  
+
+Now that we are familiar with XML, we can get into the mechanisms of how XBRL represent data. In this section we first have an overview of the components and specifications of XBRL, some basic concepts of how XBRL represents data, finally we look at real life XBRL examples.  
+
+### XBRL Components  
+The figure below tries to visualize the ingredients needed to end up with XBRL report (structured financial report):  
+
+1. At the base, we have **XML**, the foundation everything else.  
+2. As mentioned, [**XBRL specifications**](#xbrl-specs) are based on XML, and these specifications are tools to build a reporting system based on XBRL.  
+3. **XBRL Taxonomy** is the most critical ingredient, it uses XBRL specifications to build the structure and the data model for XBRL reporting, we can think of a Taxonomy as the Schema for a particular reporting domain. XBRL Taxonomy consists of:  
+    * __Dictionary/Vocabulary__ of elements to be used in reporting, in XBRL terminology, these are called _"Concepts"_.  
+    * __Type Definitions__ are components or extension of existing components that are the building blocks of Concepts.  
+    * __Linkbases__ are groups of Xlinks that links concepts together to form a logical structure such as _Presentation Linkbase_ used to link concept together in form to enable correct hierarchical presentation of these concepts in a report or any form of rendering.  
+    * __Other Imported Taxonomies__ XBRL taxonomies can import other taxonomies to be part of the base taxonomy, this mechanism allows for reusing existing taxonomies rather than recreating something that already exits. All taxonomies imported by the base taxonomy and any other taxonomies that imported taxonomies import all together are called **Discoverable Taxonomy Set (DTS)**. An example for that is the US-GAAP taxonomy which imports Stock Exchange Commission (SEC) taxonomies.  
+    * __Extensions__ to other taxonomies maybe part of the base taxonomy.  
+    * __Other Resources__ such as documentation and references may be included in an XBRL Taxonomy.  
+4. **XBRL Report** consists of:  
+    
+    * _Schema_ containing any extension to the base taxonomy if extension is allowed.  
+    * _Linkbases_ relevant to the report.  
+    * _Instance Document_ containing the information for the current report.  
+5. **Consumer Data Model** is where the data transported by XBRL ends up, taxonomies must consider consumer data needs in its design. 
+  
+```{r xbrl_components, echo=FALSE,  warning=FALSE, fig.cap='XBRL Components'}
+DiagrammeR::grViz("
+
+digraph matrix {
+
+  graph [splines=ortho, rankdir=BT, label='XBRL Components', nodesep=0.05, ranksep=0.02, fontname=Helvetica]
+  
+  node [shape=box, style='filled', color=transparent, fillcolor='#f5f5f5', fontname=Helvetica, fontcolor='#2c3e50']
+  
+  a[label='XML', width=9.3, fillcolor='#d9d9d9']; 
+  b[label='XBRL Specifications', width=9.3, fillcolor='#d9d9d9']; 
+  c[label='dictionary/vocabulary', width=3, fillcolor='#e6e6e6']; 
+  d[label='Linkbases', width=3, fillcolor='#e6e6e6']; 
+  e[label='Type Definitions', width=3, fillcolor='#e6e6e6']; 
+  f[label='Extensions', width=3, fillcolor='#e6e6e6']; 
+  g[label='Other Imported Taxonomies', width=3, fillcolor='#e6e6e6'];
+  h[label='Other Resources', width=3, fillcolor='#e6e6e6'];
+  i[label='Report Specific Taxonomy Extensions and Linkbases (if allowed)', width=9.1, fillcolor='#f5f5f5']
+  j[label='XBRL Instance (Report)', width=9.1, fillcolor='#f5f5f5']
+  k[label='Consumer Data Model(s)', fillcolor='#fcfcfc', width=9.3]
+
+  
+  edge[color='#242424', penwidth=0.2]
+  
+  a -> b[style=invis, arrowhead=none]
+  b -> e[style=invis, arrowhead=none]
+  subgraph cluster0 {
+    graph [rankdir=BT, label='XBRL Taxonomy', color = crimson];
+    { 
+        rank=same;
+        c -> e[style=invis, arrowhead=none]
+        c -> d[style=invis, arrowhead=none]
+    }
+    {
+        rank=same;
+        g -> h[style=invis, arrowhead=none]
+        g -> f[style=invis, arrowhead=none]
+    } 
+    c -> g[style=invis, arrowhead=none]
+  }
+  subgraph cluster1 {
+    graph [rankdir=BT, label='XBRL Report package', color = crimson];
+    i -> j[style=invis, arrowhead=none]
+  }
+  h -> i[style=invis, arrowhead=none]
+  j -> k[style=invis, arrowhead=none]
+  
+
+}                 
+", height="100%", width="100%")
+```
+
+
+
+### XBRL Specifications{#xbrl-specs}  
+As explained previously XBRL is an extension of XML, basically XBRL international used XML to define XBRL components and elements resulting in [XBRL specifications](https://specifications.xbrl.org/specifications.html).  
+As of date of this document, the relevant current XBRL specifications recommendations are as follows: 
+
+* [XBRL](https://specifications.xbrl.org/spec-group-index-group-base-spec.html){target=_blank}: Core XBRL Specs.  
+* [Dimensions](https://specifications.xbrl.org/spec-group-index-group-dimensions.html){target=_blank}: The XBRL Dimensions specification enables the reporting of multi-dimensional facts against dimensions defined in an XBRL taxonomy.  
+* [Extensible Enumerations](https://specifications.xbrl.org/spec-group-index-extensible-enumerations.html){target=_blank}: Allows for constraining the allowed values for primary reporting concepts (choices from specific list).  
+* [Formula](https://specifications.xbrl.org/spec-group-index-formula.html){target=_blank}: XBRL Formula provides a standard mechanism for defining rules in a taxonomy that can be applied against instance documents.  
+* [Generic Links](https://specifications.xbrl.org/spec-group-index-generic-links.html){target=_blank}: A link type with no predefined semantics or constraints. This can be used used as a building block for other specifications.  
+* [Generic Preferred Label](https://specifications.xbrl.org/spec-group-index-generic-preferred-label.html){target=_blank}: This specification introduces the preferred label feature for all relationships.    
+* [Global Ledger](https://specifications.xbrl.org/spec-group-index-xbrl-gl.html){target=_blank}: XBRL Specs for transactional reporting.  
+* [Infrastructure](https://specifications.xbrl.org/spec-group-index-infrastructure.html){target=_blank}: Specifications in this section are used to support the development of XBRL specifications and registries.  
+* [Inline XBRL](https://specifications.xbrl.org/spec-group-index-inline-xbrl.html){target=_blank}: Inline XBRL, or iXBRL, provides a mechanism for embedding XBRL tags in HTML documents.  
+* [Registries](https://specifications.xbrl.org/spec-group-index-registries.html){target=_blank}: Registries provide a centralise list of definitions, allowing implementers to re-use suitable definitions created by others.  
+* [Table Linkbase](https://specifications.xbrl.org/spec-group-index-table-linkbase.html){target=_blank}: Provides a mechanism for taxonomy authors to define a tabular layout of facts. The resulting tables can be used for both presentation and data entry.  
+* [Taxonomy & Report Packages](https://specifications.xbrl.org/spec-group-index-taxonomy-packages.html){target=_blank}: Taxonomy Packages provide a standardised mechanism for providing documentation about the content of a taxonomy.  
+* [Versioning](https://specifications.xbrl.org/spec-group-index-group-versioning.html){target=_blank}: Defines an XML syntax for an XBRL versioning Report.  
+
+Link for each recommendation includes the normative schema. 
+
+### XBRL Representation of Data  
+In the introduction of TDH, it states that  XBRL provides a platform to give data meaning [TDH section 1.1.3 page 2]. A piece of data really does not have a meaning without a context or means to associate data points, for example, data about a switch being on or off, doesn't have much value if we don't know what does this switch do and when was it on or off. XBRL gives meaning to data by providing layers of context.
+
+#### _Some Basics_  
+The TDH presents the an example of a _monthly expenses report [TDH section 2.2 page 15]_ of a person named "Bob", the report is in the form of a table with its rows having expenses line items, and columns having months and amounts of expenses.  
+
+The TDH explains that expenses amounts alone do not convey much meaning unless associated with _dimensions_ identifying additional information about the amounts, for example, who made the expenses, what is the nature of the expense, and in which periods expenses were made. The intersection of one or more of these dimensions with an amount creates a _fact_ that has contextual meaning.  
+
+One of the basic concepts of XBRL design is that it identifies data points by multiple dimensions that gives enough context to the data point to be meaningful, like in the case of the expense report (TDH example), an amount of `$900` in the first row, is identified by dimensions `Food` as nature of expense, and `January` as expense period, and `Bob` as the person who made the expense, which creates an XBRL `Fact`.  
+
+The TDH classifies dimensions that identifies facts in XBRL into 2 categories:  
+
+1. `Core Dimensions` which includes:  
+    + **_Concept_** core dimension: A taxonomy element (dictionary/vocabulary) that provides the meaning for a fact (e.g. Fixed Assets, Revenue, Profit ...), concepts are the building blocks of a taxonomy.  
+    + **_Period_** core dimension: Time frame or point of time relevant to the fact.  
+    + **_Reporting entity_**  core dimension: The entity reporting the fact, also known as `identifier`  
+    + **_Unit_** core dimension: Unit of measurement of reported fact (e.g. USD, EURO, KM, KGM, USD/Share...), it is only required for numeric facts. 
+
+2. `Taxonomy Defined Dimensions`: Concepts that exist for the purpose of grouping facts that should be interpreted in a similar way. Taxonomy Defined Dimensions do not directly define a fact but rather intersect with a fact to add further contextual or semantic information beyond what is added by the core dimensions, for example a country dimension for geographical allocation.
+
+The Core Dimension and Taxonomy Defined Dimensions are defined in the XBRL Taxonomy or its extensions using XBRL components, and then used in an XBRL instance to report facts.  
+
+#### _XBRL Elements Usage_  
+XBRL specifications define how we can express a financial report, next we will look at the XBRL elements used to describe a data point.  
+
+Assuming we want to create an XBRL report form the monthly expenses example, first we need to use XBRL specifications to create a taxonomy containing the vocabulary and linkbases, then we can create an XBRL instance that contains the facts, let's try to create few elements and discover the basic usage of XBRL elements.  
+
+#### _Creating XBRL Taxonomy `Concept`_  
+Concepts in an XBRL taxonomy are elements that provides a meaning for a fact, it is defined in the XBRL Taxonomy schema. Concepts make up the dictionary/vocabulary allowed to be used by the Taxonomy.  
+
+In case of a financial reporting taxonomy, concepts will describe numeric financial elements such as `Net Profit`, `Assets` or `Liabilities`, or narrative elements, like `Accounting Policies`. In short, a concept need to be created for every reportable element within the domain of the taxonomy, concepts are the backbone of the Taxonomy.  
+
+Let's define `Food` concept (from the monthly expenses report), with the following characteristics:  
+
+* Has a `debit` balance,  
+* Its value Cannot be null (absent value), it can have a value of `0` though,  
+* It is a monetary item, meaning that it needs to have a numeric value and a unit
+
+Concept is defined in the taxonomy SCHEMA as follows:  
+
+```{XML example_1_schema_01}
+<!-- From taxonomy schema file (.xsd) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:example="http://www.expenses.com/taxonomy"
+  xmlns:xbrli="http://www.xbrl.org/2003/instance"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  targetNamespace="http://www.expenses.com/taxonomy">
+    
+    <element 
+      xbrli:name="Food"
+      xbrli:periodType="duration"
+      xbrli:balance="debit"
+      nillable="false"
+      abstract="false"
+      type="xbrli:monetaryItemType"
+      substitustionGroup="xbrli:item"
+      id="expense_Food"/>
+        
+</xs:schema>
+```
+_Notes:_  
+
+* Namespace `http://www.xbrl.org/2003/instance` prefixed as `xbrli` was declared for XBRL specification schema to be able to use elements form that namespace. 
+* We gave our taxonomy the namespace `http://www.expenses.com/taxonomy` prefixed as `expenses`
+* `duration` was selected for `xbrli:periodType` XBRL attribute, because this is an expense that occurs during a specified period (not a balance at a moment of time).  
+* Each element must have a unique id.  
+* Because we refered to XBRL specification, this schema document can be validated against XBRL sepcifications.
+
+
+#### _Creating XBRL instance `Context`_  
+Assuming we want to report that `Bob`'s `Food` expenses for January 2020 was $900, note here that we attached 3 pieces of additional information to the expense amount, `Food` the concept core dimension, `Bob` the owner of the expense and `January 2020` the period core dimension. we already defined the `Food` concept above, to attach the owner of the expenses and the period we need to use XBRL `context` element.  
+
+`context` is an XBRL element used in XBRL instance document (report) and referenced by one or more fact(s) in the XBRL report. It contains information about period, entity, and other taxonomy defined dimension relating to this context.  
+
+We can define a context for `Bob` owner, and January 2020 period as follows:  
+```{XML example_1_instance_01}
+<!-- defined in instance document -->
+<xbrl xmlns="http://www.xbrl.org/2003/instance"
+      xmlns:expenses="http://www.expenses.com/taxonomy"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xml:lang="en-US">
+    <!-- ... at least one link:schemaRef element goes here ... -->
+    <context id="01">
+      <entity>
+        <identifier scheme="http://www.example.com/bob">Bob</identifier>
+      </entity>
+      <period>
+        <startDate>2020-01-01</startDate>
+        <endDate>2020-01-31</endDate>
+      </period>
+    </context>
+</xbrl>
+```
+_Notes XBRL instance document_  
+
+* XBRL instance document root element must be element `<xbrl>`  
+* We referenced our taxonomy namespace to be able to use elements defined in that taxonomy.  
+* We referenced XBRL schema (with no prefix) to be able to use XBRL.  
+* Because of the references above, this XBRL instance document can be validated against XBRL specifications and our taxonomy.  
+
+#### _Creating XBRL instance `unit`_  
+XBRL requires that numeric facts has a reference to a unit [[see XBRL specs 4.6.2](https://www.xbrl.org/Specification/XBRL-2.1/REC-2003-12-31/XBRL-2.1-REC-2003-12-31+corrected-errata-2013-02-20.html#_4.6.2)]. And since our concept in monetary type which is numeric type, then we need to create a unit in our instance, in addition to the context before we are able to create a fact. 
+
+We declare a unit for United States Dollars using `iso4217` taxonomy `USD` element as follows:  
+```{XML example_1_instance_02}
+<!-- Added to previous instant document as child to <xbrl> element -->
+<unit id="usd" xmlns:iso4217="http://www.xbrl.org/2003/iso4217">
+  <measure>iso4217:USD</measure>
+</unit>
+
+```
+
+#### _Creating XBRL instance `fact`_  
+Now that we have `Food` concept in our XBRL Taxonomy and have a context with `id=01` and a unit of `id="usd"` in our instance document, we can create a fact for `Bob`'s `Food` expenses for the period of `January 2020` for the amount of `900` United States Dollars as follows:  
+```{XML example_1_instance_03}
+<!-- Added to previous instant document as child to <xbrl> element -->
+
+<expenses:Food
+  contextRef="01" 
+  decimals="0" 
+  id="fact_001" 
+  unitRef="usd">900</expenses:Food>
+```
+
+
+#### _XBRL Dimensions_  
+As mentioned XBRL provides tools for reporting multidimensional facts, as mentioned core dimensions (Concept, period, reporting entity and unit) are available from the XBRL base specifications, in addition to some other tools, for taxonomy defined dimensions and more complex multidimensional structures _[XBRL Dimensions Specifications](https://specifications.xbrl.org/work-product-index-group-dimensions-dimensions.html)_ are used.  
+
+##### _Additional Dimensions from base XBRL_  
+XBRL element `context` has 2 additional features that can provide dimensionality to a fact, the `<segment>` and `<scenario>` as follows:  
+
+* `<segment>`: is defined in XBRL specifications as _"an optional container for additional mark-up that the preparer of an XBRL Instance SHOULD use to identify the business segment more completely in cases where the Entity identifier is insufficient."_ It should also be mentioned that the `<segment>` element is used to link with taxonomy defined dimension using _XBRL Dimensions Specifications_.  
+
+* `<scenario>`: XBRL specifications describes this element as _"Business facts can be reported as actual, budgeted, restated, pro forma, etc. For internal reporting purposes, there can be an even greater variety of additional metadata that preparers want to associate with items. The optional <scenario> element allows additional valid mark-up (see note above regarding segment) to be included for this purpose."_  
+
+**Segment and Scenario Example**  
+
+In the monthly expense report example, assume the `Bob` has 2 locations to track expenses for `home` and `office` (segments), also assume that `Bob` tracks `budget` and `actuals` (scenarios), to be able to include these dimensions in our report we need to first to create an extension taxonomy to include these elements as follows:
+
+```{XML segement_scenario_xsd}
+<!-- Report specific taxonomy extension -->
+<schema targetNamespace="http://bobreport.com/xbrl/taxonomy" 
+		xmlns:bob="http://bobreport.com/xbrl/taxonomy" 
+		xmlns="http://www.w3.org/2001/XMLSchema" 
+		xmlns:xbrli="http://www.xbrl.org/2003/instance">
+		  
+	<!-- Type for segments -->
+	<simpleType name="locationsType">
+		<restriction base="token">
+			<enumeration value="home"/>
+			<enumeration value="office"/>
+		</restriction>
+	</simpleType>
+		  
+	<!-- report specific segment sub-element -->
+	<element name="locations" type="bob:locationsType" />
+		  
+		  
+	<!-- Type for scenarios -->
+	<simpleType name="actualBudgetType">
+		<restriction base="token">
+			<enumeration value="actual"/>
+			<enumeration value="budget"/>
+		</restriction>
+	</simpleType>
+		  
+	<!-- report specific scneario sub-element -->
+	<element name="actualBudget" type="bob:actualBudgetType" />
+		  
+		  
+		  
+</schema>
+
+```
+
+**_Note_**
+> Elements contained by the <scenario> element MUST NOT be defined in the http://www.xbrl.org/2003/instance namespace. Also, they MUST NOT be in the substitution group for elements defined in the http://www.xbrl.org/2003/instance namespace. The <scenario> element MUST NOT be empty. `r tufte::quote_footer('--- [XBRL specifications](https://www.xbrl.org/Specification/XBRL-2.1/REC-2003-12-31/XBRL-2.1-REC-2003-12-31+corrected-errata-2013-02-20.html#_4.7.4)')`
+
+To report facts on a segment and/or scenario elements, we need first to include the namespace `http://bobreport.com/xbrl/taxonomy` in our instance report to access these elements, then we need to create contexts with those elements then reference these contexts in the reported facts as follows:  
+
+```{XML segment_scenario_instance}
+<!-- Added to previous instant document as children to <xbrl> element -->
+  <xbrl ....... xmlns:bob="http://bobreport.com/xbrl/taxonomy">
+  <!-- ... at least one link:schemaRef element goes here ... -->
+    <context id="02">
+      <entity>
+        <identifier scheme="http://www.example.com/bob">Bob</identifier>
+      </entity>
+      <period>
+        <startDate>2020-01-01</startDate>
+        <endDate>2020-01-31</endDate>
+      </period>
+  
+      <segment>
+          <bob:locations>bob:home</bob:location>
+      </segment>
+  
+      <scenario>
+          <bob:actualBudget>bob:actual</bob:actualBudget>
+      </scenario>
+  
+    </context>
+
+```
+
+Now having context `id=02` we can reference the facts that include `actual` figures for location `home` in our instance report.  
+
+
+##### Taxonomy defined dimensions   
+Taxonomy defined dimensions enable creation of complex structures in XBRL taxonomy and reports. This is achieved through the interactions between concepts and linkbases, this is best described in TDH section 2.2.5 page 21 as follows:  
+
+>A taxonomy-defined dimension is a grouping of concepts that is used to add organizational structure to facts. These dimensional concepts should not be directly associated with a data point but rather are employed to indicate additional contextual information beyond the simple semantic identifier or what is provided through any of the other core dimensions. Expanding the expense example by attributing the monthly expenses to two people in the same household creates a level of complexity that cannot be easily represented with only concepts. Previously, there were only two dimensions: expenses (as rows) and months (as columns).`r tufte::quote_footer('--- [TDH section 2.2.8 page 24](https://xbrlus.github.io/docs/tdh.html)')`  
+
+**_Some XBRL Dimensions terminology_**  
+
+* `Dimension`: A qualifying characteristic that is used to uniquely define a data point (other than core dimensions) for example a "Geography Dimension".
+* `Domain`: A set of related values. Examples of different domains for use on a "geography" dimension would be "Countries", "Continents" or "States". In XBRL, domains are defined using taxonomy elements that are used to group domain members.  
+* `Domain member`: An element representing one of the possibilities within a domain.  
+* `Cube`: A cube is defined by combining a set of dimensions with a set of concepts. Cubes are often referred to as "hypercubes", as unlike a physical, 3-dimensional cube, a hypercube may have any number of dimensions.
+
+All the above contructs are defined as concepts, but using XBRL specifications for the `type` and `substitutionGroup` attributes used for defining a concept.  
+
+The TDH at this section, splits the monthly expenses by Bob's children, with each month split into 2 columns for each of Bob's children. Assume that we want to organize this information in XBRL by doing the following:  
+
+* Create a grouping concept or header called `expenses` to group all the expenses together,  
+* Create `persons` dimension, and then create a `domain` for `bobChildrenDomain` and `domain member` for each child referenced in the report.  
+
+This can be implementd in XBRL as follows:  
+```{xml dimension_schema}
+<!-- Report specific taxonomy extension -->
+<schema targetNamespace="http://bobreport.com/xbrl/taxonomy" 
+		xmlns:bob="http://bobreport.com/xbrl/taxonomy" 
+		xmlns="http://www.w3.org/2001/XMLSchema" 
+		xmlns:xbrli="http://www.xbrl.org/2003/instance">
+		<!-- note here we included xbrl dimensions specs to have access to its elements -->
+		xmlns:xbrldt="http://xbrl.org/2005/xbrldt"
+		xmlns:dtr-types="http://www.xbrl.org/dtr/type/2020-01-21"
+		
+		<!-- create a grouping expense element -->
+		<element abstract="true" 
+		         id="expenses_abstract" 
+		         name="ExpensesAbstract" 
+		         nillable="true"
+		         xbrli:balance="debit"
+		         substitutionGroup="xbrli:item" 
+		         type="xbrli:monetaryItemType" 
+		         xbrli:periodType="duration"/>
+		
+		<!-- create persons dimension -->
+		<element abstract="true" 
+		         id="dim_01_persons" 
+		         name="personsDim" 
+		         nillable="true" 
+		         substitutionGroup="xbrldt:dimensionItem" 
+		         type="xbrli:stringItemType" 
+		         xbrli:periodType="duration"/>
+		<!-- create children domain -->        
+		<element abstract="true" 
+		        id="domain_01_children" 
+		        name="ChildrenDomain" 
+		        nillable="true" 
+		        substitutionGroup="xbrli:item" 
+		        type="dtr-types:domainItemType" 
+		        xbrli:periodType="duration"/>
+		          
+		  <!-- create domain member for each child -->
+		  <element 
+		      abstract="true" 
+		      id="members_01_childOneMember"
+		      name="ChildOneMember"
+		      nillable="true" 
+		      substitutionGroup="xbrli:item" 
+		      type="dtr-types:domainItemType" 
+		      xbrli:periodType="duration"/>
+		  <element 
+		      abstract="true" 
+		      id="members_02_childTwoMember"
+		      name="ChildTwoMember"
+		      nillable="true" 
+		      substitutionGroup="xbrli:item" 
+		      type="dtr-types:domainItemType" 
+		      xbrli:periodType="duration"/>
+</schema>
+<!-- note attributes usef from dtr-types and xbrldt namespaces>
+
+```
+  
+**_Notes_** All elements defined above has the `@abstract` attribute as `ture`, this means that this element is not allowed to be used in XBRL instance document to report facts, this element is only for organization purposes.
+
+Now we can reference the dimension in the in the instance document through `<context>` element as follows:  
+```{XML dim_instance}
+<!-- Added to previous instant document as children to <xbrl> element -->
+  <xbrl ....... xmlns:bob="http://bobreport.com/xbrl/taxonomy"
+                xmlns:xbrldi="http://xbrl.org/2006/xbrldi">
+  <!-- ... at least one link:schemaRef element goes here ... -->
+    <context id="03">
+      <entity>
+        <identifier scheme="http://www.example.com/bob">Bob</identifier>
+      </entity>
+      <period>
+        <startDate>2020-01-01</startDate>
+        <endDate>2020-01-31</endDate>
+      </period>
+  
+      <segment>
+          <bob:locations>bob:home</bob:location>
+          <xbrldi:explicitMember
+                  dimension="bob:personsDim">bob:ChildOneMember
+          </xbrldi:explicitMember>
+      </segment>
+  
+      <scenario>
+          <bob:actualBudget>bob:actual</bob:actualBudget>
+      </scenario>
+  
+    </context>
+
+```
+
+Now facts reporting actual expenses, for home location, relating to child one for January 2020 can use the above context and have all expenses groupped under one heading using the `ExpensesAbstract` element.
+
+**_Notes_** There are two types of members `explicit members`, and `typed member`, the first type is where members are explicitly defined in the taxonomy and no other members can be used with that domain except the defined members. On the other hand `typed members`, only type of the member is defined in the taxonomy, and any can be used if it matched the type.  
+
+Keep in mind that XBRL dimensions specifications rely heavily on the linking mechanisms provided by XBRL through linkbases, which will be the next topic.  
+
+### XBRL Linkbases  
+
+We have looked at how to create taxonomy elements and taxonomy defined dimensions, and how to use these elements in XBRL instance report, XBRL linkbases (based on XML XLink) provides for a mechanism to create relationships between those elements and with other internal or external resources to create a meaningful self-describing data structure.  
+
+
+#### The basics  
+As mentioned XBRL makes use of XML XLink specifications, generally speaking, there are two main categories of links:  
+
+* `Simple Links`: A simple link in XLink creates a unidirectional hyperlink from one element to another through a URI. The element containing the link (the source element) is linked to a destination element. This destination element is not connected to the source element. This is common in HTML hyperlinking, where a link on one website may lead a user to an additional website, but that additional website may not contain a link back to the source location.  
+
+* `Extended Links`: Provide for multiple resources at the source or destination to be connected via multiple arcs. An arc contains information about the origin, destination, and the behavior of a link between two resources. The origin resource and the destination resource are defined by labels. **_Through one or more arcs, extended links achieve complex connections among multiple resources_**. Like simple links, extended links can define relationships between elements within the same namespace or across different namespaces.  
+
+It is important to note that **Extended Links** creates relationships between elements using `arcs` that describes the behavior of the relationship.
+
+XBRL specifications defines several types of links based on XLink specs, most common links and arcs are [[based on XBRL Glossary](https://www.xbrl.org/guidance/xbrl-glossary)]:  
+
+* `Presentation Links`: An extended link providing for the organisation of taxonomy elements into a hierarchical structure with the aim of providing a means of visualising or navigating the taxonomy. [At a technical level, the presentation tree is defined using the `parent-child arcrole` in the XBRL specification]
+
+* `Calculation Links`: An extended lin providing relationships between concepts in a taxonomy for the purpose of describing and validating simple totals and subtotals. [At a technical level, these relationships are defined using the `summation-item arcrole` in the XBRL specification]  
+
+* `Label links`: An extended link providing a relationship between concept and human readable description of a taxonomy component. XBRL labels can be defined in multiple languages and can be of multiple types, such as a "standard label", which provides a concise name for the component, or a "documentation label" which provides a more complete definition of the component. Example of arcroles `label`, `terseLabel`, `periodStartLabel`, `periodEndLabel`, `totalLabel`
+
+* `Definition Links`: An extended providing for relationships that arranges pairs of concepts in a specific semantic relationship. These relationships may be above and beyond calculation or presentation relationships. Concept core dimensions cannot be used in a definition relationship, and is pimarily used for dimensional relationships in XBRL Dimensions specifications. Example arcroles `hypercube-dimension`, `dimenstion-domain`, `domain-member`, `dimenstion-defualt`  
+
+* `Reference link`: An extended link providing for relation between elements of the taxonomy and external reference such as accounting standars, or laws. Example arcrole `concept-reference`.  
+
+* `Formula link`: An extended link providing relations necessary to define formulae (XBRL Formula Specification) used in validating XBRL instances. Example arcrole `variable-set`, `variable-set-filter`.  
+
+* `Table Linkbase`: an extended link providing relations needed for tabular view of a taxonomy or report that is used for presentation or data entry purposes. XBRL reporting templates can support complex, multi-dimensional reports, such as those seen in prudential reporting, and provide a business user-friendly view of the data. XBRL reporting templates are typically used in closed reporting programmes, where a template is prescribed by the collector. [At a technical level, XBRL reporting templates are defined using the Table Linkbase specification]
+
+
+
+
+
+
+

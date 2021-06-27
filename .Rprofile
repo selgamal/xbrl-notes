@@ -1,0 +1,5 @@
+cat(paste0('Starting project: ', basename(getwd()), "\nloading default stuff:\n"))
+cat("tidyverse....\n")
+library(tidyverse, quietly = F, verbose = T)
+cat("xml2....\n")
+library(xml2, quietly = F, verbose = T)
