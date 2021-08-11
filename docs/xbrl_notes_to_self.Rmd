@@ -372,6 +372,8 @@ Elements declared in an xsd schema are based on XML built-in data types, or type
 ![[From W3C website](https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#built-in-datatypes){target="_blank" style="border-color: #cecece;border-style: solid;font-size: large;border-width: thin;padding: 5px;"}](`r paste0(here::here(),"/docs/images/type-hierarchy.gif")`){style="display: block;margin-left: auto;margin-right: auto;"}
 </div>  
 
+_**Note** `substitutionGroup`: A substitution group is a feature of XML schema that allows you to specify elements that can replace another element in documents generated from that schema. The replaceable element is called the head element and must be defined in the schema’s global scope. The elements of the substitution group must be of the same type as the head element or a type that is derived from the head element’s type._
+
 Given that XML instance can have one and only one root element, this element will inevitably include other elements that have more complicated content than just holding a value of a certain type, and built-in types will not be enough to type these elements. The answer to that is in the `X` of XML which stands for `eXtensible`, xsd provides capabilities for creating new types derived from built-in types or other types that are already derived from built-in types. _A Summary of type derivation in XSD is as follows:_ 
 
 ```{r xmlSchema_types_derivation_diagram, echo=FALSE}
@@ -476,13 +478,13 @@ xml2::xml_validate(inst_err,schema)
 As shown above, a simple XML validator (xml2) detected all the errors and reported them.  
 
 ### XLink and XPointer  
-Another component that XML provides is XLink and XPointer, these components can be used to link other components within XML or link to external resources.  
+XLink and XPointer are components provided by XML, these components can be used to link XML entities with each other within XML or to external resources.  
 
 __XLink__ is a [W3C recommendation](https://www.w3.org/TR/xlink11/) some what like hyperlink in HTML: 
 
 > XML Linking Language (XLink) Version 1.1, which allows elements to be inserted into XML documents in order to create and describe links between resources. It uses XML syntax to create structures that can describe links similar to the simple unidirectional hyperlinks of today's HTML, as well as more sophisticated links. `r tufte::quote_footer('--- [W3.org XLink recommendation](https://www.w3.org/TR/xlink11/#abstract)')`  
 
-__XPointer__ is a [W3C recommendation](https://www.w3.org/TR/xptr/) is a construct that allows for allocating specific fragment within XML.  
+__XPointer__ is a [W3C recommendation](https://www.w3.org/TR/xptr/) is a construct that allows for locating specific fragment within XML.  
 
 It is important to keep in mind that XML and its components are just instructions, they do nothing other than transporting information. For the XLink and XPointer components to have an effect, it needs to be processed by an XML processor.  
 
@@ -518,7 +520,7 @@ There is no browser support for XML XLink, but the best way to simulate it and u
 We should be taken to the XLink recommendation on the W3C website at the location of `Abstract`, what happened here is that the browser recognized the hyperlink (XLink) and then the locator given after the `#` symbol (XPointer) and executed the instructions, and in this case the instructions was to open the website at the specified location, so we were able to link form this page to another external page. In XML XLink works the same way, it links elements to other elements, or external resources with specific instructions based on the attributes and types of links used.
 
 ### Conclusion  
-XML as language and standards that provides for:  
+XML language and standards that provides for:  
 
 * Flexibility in data modeling  
 * Mechanisms for creating vocabularies (dictionaries)  
@@ -537,7 +539,16 @@ _It is important to understand that XBRL taxonomies instance documents are usual
 ### XBRL Components  
 The figure below tries to visualize the ingredients needed to end up with XBRL report (structured financial report):  
 
-```{r xbrl_components, echo=FALSE,  warning=FALSE, fig.cap='XBRL Components'}
+<div>
+<center>
+![XBRL Components](`r here::here('docs', 'images/xbrl_components.svg')`)
+</center>
+<p style="text-align:center">
+**XBRL Components**
+</p>
+</div>
+
+```{r xbrl_components, echo=FALSE,  warning=FALSE, eval=FALSE, fig.cap='XBRL Components'}
 DiagrammeR::grViz("
 
 digraph matrix {
@@ -644,10 +655,10 @@ As of date of this document, the relevant current XBRL specifications recommenda
 Link for each recommendation includes the normative schema. 
 
 ### XBRL Representation of Data  
-In the introduction of TDH, it states that  XBRL provides a platform to give data meaning [TDH section 1.1.3 page 2]. A piece of data really does not have a meaning without a context or means to associate it with other data points, for example, data about a switch being on or off doesn't have much value if we don't know what does this switch do and when was it on or off. XBRL gives meaning to data by providing layers of context.
+In the introduction of TDH, it states that  XBRL provides a platform to give data meaning [[TDH section 1.1.3 page 2](https://xbrlus.github.io/docs/tdh.html#a_Toc45794890)]. A piece of data really does not have a meaning without a context or means to associate it with other data points, for example, data about a switch being on or off doesn't have much value if we don't know what does this switch do and when was it on or off. XBRL gives meaning to data by providing layers of context.
 
 #### _Some Basics_  
-The TDH presents the an example of a _monthly expenses report [TDH section 2.2 page 15]_ of a person named "Bob", the report is in the form of a table with its rows having expenses line items, and columns having months and amounts of expenses.  
+The TDH presents the an example of a _monthly expenses report [TDH section 2.2 page 15](https://xbrlus.github.io/docs/tdh.html#a_Toc45794894)_ of a person named "Bob", the report is in the form of a table with its rows having expenses line items, and columns having months and amounts of expenses.  
 
 The TDH explains that expenses amounts alone do not convey much meaning unless associated with _dimensions_ identifying additional information about the amounts, for example, who made the expenses, what is the nature of the expense, and in which periods expenses were made. The intersection of one or more of these dimensions with an amount creates a _fact_ that has contextual meaning.  
 
@@ -673,7 +684,7 @@ Assuming we want to create an XBRL report form the monthly expenses example, fir
 #### _Creating XBRL Taxonomy `Concept`_  
 Concepts in an XBRL taxonomy are elements that provides a meaning for a fact, it is defined in the XBRL Taxonomy schema. Concepts make up the dictionary/vocabulary allowed to be used by the Taxonomy. 
 
-In case of a financial reporting taxonomy, concepts will describe numeric financial elements such as `Net Profit`, `Assets` or `Liabilities`, or narrative elements, like `Accounting Policies`. In short, a concept needs to be created for every reportable element within the domain of the taxonomy, concepts are the backbone of the Taxonomy. Building blocks for a taxonomy concept are defined in XBRL core specifications in namespace `{http://www.xbrl.org/2003/instance}`. Concepts have 2 main types defined in XBRL taxonomy, `item` and `tuple`:  
+In case of a financial reporting taxonomy, concepts may describe numeric financial elements such as `Net Profit`, `Assets` or `Liabilities`, or narrative elements, like `Accounting Policies`. In short, a concept needs to be created for every reportable element within the domain of the taxonomy, concepts are the backbone of the Taxonomy. Building blocks for a taxonomy concept are defined in XBRL core specifications in namespace `{http://www.xbrl.org/2003/instance}`. Concepts have 2 main types defined in XBRL taxonomy, `item` and `tuple`:  
 
 * `item`: an Item represents a single fact or business measurement. In the XML Schema for XBRL instances, item is defined as an Abstract Element. This means that it will never appear in its own right in an XBRL Instance. Therefore, all elements representing single facts or business measurements defined in an XBRL taxonomy document and reported in an XBRL instance MUST be either (a) members of the substitution group item; or, (b) members of a substitution group originally based on item. 
 
@@ -709,7 +720,7 @@ Let's define `Food` concept (from the monthly expenses report), with the followi
 * It is a monetary item, meaning that it needs to have a numeric value and a unit
 
 Concept is defined in the taxonomy SCHEMA as follows:  
-
+<div id="example_1_schema_01"/>
 ```{r example_1_schema_01, echo=FALSE}
 fn_CodeChunkOut(lang = 'xml', txt = 
 '<!-- From taxonomy schema file (.xsd) -->
