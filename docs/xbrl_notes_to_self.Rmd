@@ -815,8 +815,8 @@ _Notes XBRL instance document_
 * Because of the references above, this XBRL instance document can be validated against XBRL specifications and our taxonomy.  
 
 ##### _Creating XBRL instance `unit`_  
-XBRL requires that numeric facts has a reference to a unit [[see XBRL specs 4.6.2](https://www.xbrl.org/Specification/XBRL-2.1/REC-2003-12-31/XBRL-2.1-REC-2003-12-31+corrected-errata-2013-02-20.html#_4.6.2)]. And since our concept in monetary type which is numeric type, then we need to create a unit in our instance, in addition to the context before we are able to create a fact. 
-Following is a digram for the declaration of the unit type in XBRL specifications:  
+XBRL requires that numeric type facts has a reference to a unit [[see XBRL specs 4.6.2](https://www.xbrl.org/Specification/XBRL-2.1/REC-2003-12-31/XBRL-2.1-REC-2003-12-31+corrected-errata-2013-02-20.html#_4.6.2)]. And since our concept is a monetary type which is numeric type, then we need to create a unit in our instance, in addition to the context before we are able to create a fact. 
+Following is a diagram for the declaration of the unit type in XBRL specifications:  
 <div>
 <center>
 ![Unit Type](`r here::here('docs', 'images/unitElement.jpg')`)
@@ -854,7 +854,7 @@ As mentioned XBRL provides tools for reporting multidimensional facts, as mentio
 ##### _Additional Dimensions from base XBRL_  
 XBRL element `context` has 2 additional features that can provide dimensionality to a fact, the `<segment>` and `<scenario>` as follows:  
 
-* `<segment>`: is defined in XBRL specifications as _"an optional container for additional mark-up that the preparer of an XBRL Instance SHOULD use to identify the business segment more completely in cases where the Entity identifier is insufficient."_ It should also be mentioned that the `<segment>` element is used to link with taxonomy defined dimension using _XBRL Dimensions Specifications_.  
+* `<segment>`: is defined in XBRL specifications as _"an optional container for additional mark-up that the preparer of an XBRL Instance SHOULD use to identify the business segment more completely in cases where the Entity identifier is insufficient."_ It should also be mentioned that the `<segment>` element is a child element of the `<entity>` element (which in turn is a child element of the `<context>` element) used to link with taxonomy defined dimension using _XBRL Dimensions Specifications_.  
 
 * `<scenario>`: XBRL specifications describes this element as _"Business facts can be reported as actual, budgeted, restated, pro forma, etc. For internal reporting purposes, there can be an even greater variety of additional metadata that preparers want to associate with items. The optional <scenario> element allows additional valid mark-up (see note above regarding segment) to be included for this purpose."_  
 
@@ -913,20 +913,17 @@ fn_CodeChunkOut(lang = 'xml', txt =
     <context id="02">
       <entity>
         <identifier scheme="http://www.example.com/bob">Bob</identifier>
+        <segment>
+          <bob:locations>bob:home</bob:location>
+      </segment>
       </entity>
       <period>
         <startDate>2020-01-01</startDate>
         <endDate>2020-01-31</endDate>
       </period>
-  
-      <segment>
-          <bob:locations>bob:home</bob:location>
-      </segment>
-  
       <scenario>
           <bob:actualBudget>bob:actual</bob:actualBudget>
       </scenario>
-  
     </context>')
 
 ```
