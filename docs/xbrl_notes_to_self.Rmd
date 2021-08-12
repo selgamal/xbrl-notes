@@ -725,7 +725,7 @@ Concept is defined in the taxonomy SCHEMA as follows:
 fn_CodeChunkOut(lang = 'xml', txt = 
 '<!-- From taxonomy schema file (.xsd) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:example="http://www.expenses.com/taxonomy"
+  xmlns:expenses="http://www.expenses.com/taxonomy"
   xmlns:xbrli="http://www.xbrl.org/2003/instance"
   attributeFormDefault="unqualified" elementFormDefault="qualified"
   targetNamespace="http://www.expenses.com/taxonomy">
@@ -865,8 +865,8 @@ In the monthly expense report example, assume that `Bob` has 2 locations to trac
 ```{r segement_scenario_xsd, echo=FALSE}
 fn_CodeChunkOut(lang = 'xml', txt = 
 '<!-- Report specific taxonomy extension -->
-<schema targetNamespace="http://bobreport.com/xbrl/taxonomy" 
-		xmlns:bob="http://bobreport.com/xbrl/taxonomy" 
+<schema targetNamespace="http://www.expenses.com/taxonomy" 
+		xmlns:expenses="http://www.expenses.com/taxonomy" 
 		xmlns="http://www.w3.org/2001/XMLSchema" 
 		xmlns:xbrli="http://www.xbrl.org/2003/instance">
 		  
@@ -879,8 +879,7 @@ fn_CodeChunkOut(lang = 'xml', txt =
 	</simpleType>
 		  
 	<!-- report specific segment sub-element -->
-	<element name="locations" type="bob:locationsType" />
-		  
+	<element name="locations" type="expenses:locationsType" />
 		  
 	<!-- Type for scenarios -->
 	<simpleType name="actualBudgetType">
@@ -889,12 +888,8 @@ fn_CodeChunkOut(lang = 'xml', txt =
 			<enumeration value="budget"/>
 		</restriction>
 	</simpleType>
-		  
 	<!-- report specific scneario sub-element -->
-	<element name="actualBudget" type="bob:actualBudgetType" />
-		  
-		  
-		  
+	<element name="actualBudget" type="expenses:actualBudgetType" />
 </schema>')
 
 ```
@@ -908,13 +903,13 @@ To report facts using locations and/or budget vs actual elements, namespace `htt
 ```{r segment_scenario_instance, echo=FALSE}
 fn_CodeChunkOut(lang = 'xml', txt = 
 '<!-- Added to previous instant document as children to <xbrl> element -->
-  <xbrl ....... xmlns:bob="http://bobreport.com/xbrl/taxonomy">
+  <xbrl ....... xmlns:expenses="http://www.expenses.com/taxonomy">
   <!-- ... at least one link:schemaRef element goes here ... -->
     <context id="02">
       <entity>
         <identifier scheme="http://www.example.com/bob">Bob</identifier>
         <segment>
-          <bob:locations>bob:home</bob:location>
+          <expenses:locations>expenses:home</expenses:location>
       </segment>
       </entity>
       <period>
@@ -922,7 +917,7 @@ fn_CodeChunkOut(lang = 'xml', txt =
         <endDate>2020-01-31</endDate>
       </period>
       <scenario>
-          <bob:actualBudget>bob:actual</bob:actualBudget>
+          <expenses:actualBudget>expenses:actual</expenses:actualBudget>
       </scenario>
     </context>')
 
@@ -943,7 +938,7 @@ Taxonomy defined dimensions enable creation of complex structures in XBRL taxono
 * `Domain member`: An element representing one of the possibilities within a domain.  
 * `Cube`: A cube is defined by combining a set of dimensions with a set of concepts. Cubes are often referred to as "hypercubes", as unlike a physical, 3-dimensional cube, a hypercube may have any number of dimensions.
 
-All the above constructs are defined as concepts, but using XBRL specifications for the `@type` and `@substitutionGroup` attributes used for defining a concept.  
+All the above constructs are defined as concepts, but with special values for the `@type` and `@substitutionGroup` attributes, these special values are defined in the `XBRL Dimensions Specifications`.  
 
 The TDH at this section, splits the monthly expenses by Bob's children, with each month split into 2 columns for each of Bob's children. Assume that we want to organize this information in XBRL by doing the following:  
 
@@ -957,10 +952,10 @@ fn_CodeChunkOut(lang = 'xml', txt =
 <schema targetNamespace="http://bobreport.com/xbrl/taxonomy" 
 		xmlns:bob="http://bobreport.com/xbrl/taxonomy" 
 		xmlns="http://www.w3.org/2001/XMLSchema" 
-		xmlns:xbrli="http://www.xbrl.org/2003/instance">
-		<!-- note here we included xbrl dimensions specs to have access to its elements -->
+		xmlns:xbrli="http://www.xbrl.org/2003/instance"
 		xmlns:xbrldt="http://xbrl.org/2005/xbrldt"
-		xmlns:dtr-types="http://www.xbrl.org/dtr/type/2020-01-21"
+		xmlns:dtr-types="http://www.xbrl.org/dtr/type/2020-01-21">
+		<!-- note above we included xbrl dimensions specs to have access to its elements -->
 		
 		<!-- create a grouping expense element -->
 		<element abstract="true" 
@@ -1020,6 +1015,7 @@ fn_CodeChunkOut(lang = 'xml', txt =
   <xbrl ....... xmlns:bob="http://bobreport.com/xbrl/taxonomy"
                 xmlns:xbrldi="http://xbrl.org/2006/xbrldi">
   <!-- ... at least one link:schemaRef element goes here ... -->
+  <!-- ... Must Have a linkbaseRef for the definition link ... -->
     <context id="03">
       <entity>
         <identifier scheme="http://www.example.com/bob">Bob</identifier>
