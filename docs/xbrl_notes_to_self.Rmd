@@ -958,51 +958,30 @@ fn_CodeChunkOut(lang = 'xml', txt =
 		<!-- note above we included xbrl dimensions specs to have access to its elements -->
 		
 		<!-- create a grouping expense element -->
-		<element abstract="true" 
-		         id="expenses_abstract" 
-		         name="ExpensesAbstract" 
-		         nillable="true"
-		         xbrli:balance="debit"
-		         substitutionGroup="xbrli:item" 
-		         type="xbrli:monetaryItemType" 
-		         xbrli:periodType="duration"/>
+		<element abstract="true" id="expenses_abstract" name="ExpensesAbstract" 
+		         nillable="true" xbrli:balance="debit" substitutionGroup="xbrli:item" 
+		         type="xbrli:monetaryItemType" xbrli:periodType="duration"/>
 		
 		<!-- create persons dimension -->
-		<element abstract="true" 
-		         id="dim_01_persons" 
-		         name="personsDim" 
-		         nillable="true" 
-		         substitutionGroup="xbrldt:dimensionItem" 
-		         type="xbrli:stringItemType" 
-		         xbrli:periodType="duration"/>
+		<element abstract="true" id="dim_01_persons" name="personsDim" 
+		         nillable="true" substitutionGroup="xbrldt:dimensionItem" 
+		         type="xbrli:stringItemType" xbrli:periodType="duration"/>
+		         
 		<!-- create children domain -->        
-		<element abstract="true" 
-		        id="domain_01_children" 
-		        name="ChildrenDomain" 
-		        nillable="true" 
-		        substitutionGroup="xbrli:item" 
-		        type="dtr-types:domainItemType" 
-		        xbrli:periodType="duration"/>
+		<element abstract="true" id="domain_01_children" name="ChildrenDomain" 
+		        nillable="true" substitutionGroup="xbrli:item" 
+		        type="dtr-types:domainItemType" xbrli:periodType="duration"/>
 		          
 		  <!-- create domain member for each child -->
-		  <element 
-		      abstract="true" 
-		      id="members_01_childOneMember"
-		      name="ChildOneMember"
-		      nillable="true" 
-		      substitutionGroup="xbrli:item" 
-		      type="dtr-types:domainItemType" 
-		      xbrli:periodType="duration"/>
-		  <element 
-		      abstract="true" 
-		      id="members_02_childTwoMember"
-		      name="ChildTwoMember"
-		      nillable="true" 
-		      substitutionGroup="xbrli:item" 
-		      type="dtr-types:domainItemType" 
-		      xbrli:periodType="duration"/>
+		  <element abstract="true" id="members_01_childOneMember" name="ChildOneMember"
+		      nillable="true" substitutionGroup="xbrli:item" 
+		      type="dtr-types:domainItemType" xbrli:periodType="duration"/>
+		  
+		  <element abstract="true" id="members_02_childTwoMember" name="ChildTwoMember"
+		      nillable="true" substitutionGroup="xbrli:item" 
+		      type="dtr-types:domainItemType" xbrli:periodType="duration"/>
 </schema>
-<!-- note attributes usef from dtr-types and xbrldt namespaces>')
+<!-- note attributes use from dtr-types and xbrldt namespaces>')
 
 ```
   
