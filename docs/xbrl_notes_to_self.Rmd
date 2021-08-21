@@ -318,7 +318,7 @@ for(r in asplit(tbl_1,1)) {
 }
 
 # Write the XML document to file
-xml_out_tbl_1 <- here::here('xml_files','xml_out.xml')
+xml_out_tbl_1 <- here::here('docs','xml_files/xml_out.xml')
 invisible(xml2::write_xml(xml_root, xml_out_tbl_1))
 ```
 
@@ -346,11 +346,11 @@ for(r in asplit(tbl_1,1)) {
 }
 
 # Write the XML document to file
-xml_out_tbl_2 <- here::here('xml_files','xml_out_2.xml')
+xml_out_tbl_2 <- here::here('docs','xml_files/xml_out_2.xml')
 invisible(xml2::write_xml(xml_root_2, xml_out_tbl_2))
 ```
 
-The resulting New XML file looks like this: ([see file](../xml_files/xml_out_2.xml){target=_blank})  
+The resulting New XML file looks like this: ([see file](xml_files/xml_out_2.xml){target=_blank})  
 ```{r example_2_show_xml, echo=FALSE}
 # read and display the XML file
 output_2 <- fn_CodeChunkOut(lang = "XML", File = xml_out_tbl_2)
@@ -459,9 +459,9 @@ Following with the invoices table example, a schema was created for this report 
   + `@CustomerName` of data type string
   + Finally invoice value must be a positive number or 0  
   
-Schema file is as follows: ([see file](../xml_files/example_2_schema2.xsd){target=_blank})
+Schema file is as follows: ([see file](xml_files/example_2_schema2.xsd){target=_blank})
 ```{r disblay_schema_file, echo=FALSE}
-fn_CodeChunkOut(lang='XML', File=here::here('xml_files', 'example_2_schema2.xsd'))
+fn_CodeChunkOut(lang='XML', File=here::here('docs', 'xml_files/example_2_schema2.xsd'))
 ```
 
 The XML file must reference the schema to be able to validate the file, this is done using the `@xmlns` attribute with namespace prefix 'inv', and providing the location of the schema file using `@xs:schemaLocation` attribute, note that the later attribute is from `xs=http://www.w3.org/2001/XMLSchema-instance` namespace. The new file with the schema reference is named `xml_out_2_schema.xml`, the part of the file that references the schema looks as follows:  
@@ -476,8 +476,8 @@ fn_CodeChunkOut(lang='XML', txt=
 Before processing the XML file, the receiving computer can validate the XML file against the referenced schema, in this example; validation is done using `R script` `xml2::xml_validate()` function as follows:  
 ```{r test_2_validate_0,  results='hold'}
 # Read XML instance and schema
-inst <- xml2::read_xml(here::here("xml_files","xml_out_2_schema.xml"))
-schema <- xml2::read_xml(here::here("xml_files","example_2_schema2.xsd"))
+inst <- xml2::read_xml(here::here("docs","xml_files/xml_out_2_schema.xml"))
+schema <- xml2::read_xml(here::here("docs","xml_files/example_2_schema2.xsd"))
 
 # Validate XML instance against the schema
 xml2::xml_validate(inst,schema)
@@ -485,7 +485,7 @@ xml2::xml_validate(inst,schema)
 Validating the first file returns `TRUE` with 0 errors, meaning that the file is valid according to the schema. 
 
 **Validation with Errors**  
-Another file is created and named `xml_out_2_schema_errors.xml` ([see file](../xml_files/xml_out_2_schema_errors.xml){target=_blank}), with some changes as follows:  
+Another file is created and named `xml_out_2_schema_errors.xml` ([see file](xml_files/xml_out_2_schema_errors.xml){target=_blank}), with some changes as follows:  
 
 1. For the first invoice remove `@CustomerName` attribute  -> test missing attributes are detected.
 2. For the second invoice change `@InvoiceNum` value to string `ix`-> test inconsistent attribute datatype is detected.  
@@ -495,8 +495,8 @@ Another file is created and named `xml_out_2_schema_errors.xml` ([see file](../x
 Then we run the validation again on the modified file, we should get an error this time:  
 ```{r test_2_validate_1,  results='hold'}
 # Read XML instance and schema"
-inst_err <- xml2::read_xml(here::here("xml_files","xml_out_2_schema_errors.xml"))
-schema <- xml2::read_xml(here::here("xml_files","example_2_schema2.xsd"))
+inst_err <- xml2::read_xml(here::here("docs","xml_files/xml_out_2_schema_errors.xml"))
+schema <- xml2::read_xml(here::here("docs","xml_files/example_2_schema2.xsd"))
 
 # Validate XML instance against the schema
 xml2::xml_validate(inst_err,schema)
@@ -1201,9 +1201,9 @@ tbl
 
 ```
 #### Taxonomy  
-First we create our schema/taxonomy as follows: ([see file](../xml_files/incomeStatementExample/is.xsd){target=_blank})  
+First we create our schema/taxonomy as follows: ([see file](xml_files/incomeStatementExample/is.xsd){target=_blank})  
 ```{r is_example_schema, echo=FALSE}
-fn_CodeChunkOut(lang='xml', File = here::here('xml_files/incomeStatementExample','is.xsd'))
+fn_CodeChunkOut(lang='xml', File = here::here('docs','xml_files/incomeStatementExample/is.xsd'))
 ```
 
 Note that the root element for the entry point of the taxonomy is `<schema>` as any XML schema document.  
@@ -1213,7 +1213,7 @@ Note that the root element for the entry point of the taxonomy is `<schema>` as 
 ##### Imports
 _Importing other schemas and taxonomies to be used in our taxonomy using `<import>` element as follows:_  
 ```{r is_xsd_imports, echo=FALSE}
-is_xsd <- xml2::read_xml(here::here('xml_files/incomeStatementExample','is.xsd'))
+is_xsd <- xml2::read_xml(here::here('docs','xml_files/incomeStatementExample/is.xsd'))
 
 imports <- xml2::xml_find_all(is_xsd,'.//*[local-name()="import"]') %>%
   map(function(x) {
@@ -1282,9 +1282,9 @@ htmltools::div(htmltools::HTML(k), style="overflow-x:auto")
 #### Presentation linkbase  
 Presentation linkbase is used to define concepts relationships in terms of presentation and rendering, in other words it organizes concepts by defining the order and grouping of concepts within the taxonomy, also it is used for rendering a taxonomy in a human readable format. 
 
-Presentation linkbase XML file:([see file](../xml_files/incomeStatementExample/is_pre.xml){target=_blank})  
+Presentation linkbase XML file:([see file](xml_files/incomeStatementExample/is_pre.xml){target=_blank})  
 ```{r is_example_pre_link, echo=FALSE}
-fn_CodeChunkOut(lang='xml', File = here::here('xml_files/incomeStatementExample','is_pre.xml'))
+fn_CodeChunkOut(lang='xml', File = here::here('docs','xml_files/incomeStatementExample/is_pre.xml'))
 ```
   
 Note that the root element is `<linkbase>`, which can have only four types of children elements (see [linkbase element](#linkbase-element-img))
@@ -1294,7 +1294,7 @@ Note that the root element is `<linkbase>`, which can have only four types of ch
 ##### roleRef  
 Element `<roleRef>` references the `<roleType>` declaration in the schema and is repeated for each `roleType` declared, following is the `roleRef`` from our example:  
 ```{r is_pre_roleType, echo=FALSE}
-is_pre <- xml2::read_xml(here::here('xml_files/incomeStatementExample','is_pre.xml'))
+is_pre <- xml2::read_xml(here::here('docs','xml_files/incomeStatementExample/is_pre.xml'))
 
 roleRef <- xml2::xml_find_all(is_pre,'.//*[local-name()="roleRef"]') %>%
   map(function(x) {
@@ -1369,9 +1369,9 @@ depth=c('Container','Root','2','3','4','5','5','3','4','4','4','4','4','4','4'))
 #### Calculation linkbase  
 Calculation linkbase is used to describe calculation relationships between concepts in terms of totals and subtotals, it is important to keep in mind that XBRL itself does not do any calculations, it just describe the calculation relationship between concepts. 
 
-Calculation linkbase XML file ([see file](../xml_files/incomeStatementExample/is_cal.xml){target=_blank}):  
+Calculation linkbase XML file ([see file](xml_files/incomeStatementExample/is_cal.xml){target=_blank}):  
 ```{r is_example_cal_link, echo=FALSE}
-fn_CodeChunkOut(lang='xml', File = here::here('xml_files/incomeStatementExample','is_cal.xml'))
+fn_CodeChunkOut(lang='xml', File = here::here('docs','xml_files/incomeStatementExample/is_cal.xml'))
 ```
   
 **Calculation linkbase relevant components can be analyzed as follows:**  
@@ -1379,7 +1379,7 @@ fn_CodeChunkOut(lang='xml', File = here::here('xml_files/incomeStatementExample'
 ##### roleRef  
 Element `<roleRef>` references the `<roleType>` declaration in the schema and is repeated for each `roleType` declared, following is the `roleRef`` from our example:  
 ```{r is_cal_roleType, echo=FALSE}
-is_cal <- xml2::read_xml(here::here('xml_files/incomeStatementExample','is_cal.xml'))
+is_cal <- xml2::read_xml(here::here('docs','xml_files/incomeStatementExample/is_cal.xml'))
 
 roleRef <- xml2::xml_find_all(is_cal,'.//*[local-name()="roleRef"]') %>%
   map(function(x) {
@@ -1468,15 +1468,15 @@ For the full list of roles ([See XBRL Specifications Table 8](https://www.xbrl.o
 
 In this example the English labels and Arabic labels are stored in separate files (`is_lab_en.xml` and `is_lab_ar.xml`), files displayed below:  
 
-Arabic linkbase XML file:([see file](../xml_files/incomeStatementExample/is_lab_ar.xml){target=_blank})  
+Arabic linkbase XML file:([see file](xml_files/incomeStatementExample/is_lab_ar.xml){target=_blank})  
 ```{r is_example_lab_ar, echo=FALSE}
-fn_CodeChunkOut(lang='xml', File = here::here('xml_files/incomeStatementExample','is_lab_ar.xml'))
+fn_CodeChunkOut(lang='xml', File = here::here('docs','xml_files/incomeStatementExample/is_lab_ar.xml'))
 ```
 
 
-English linkbase XML file: ([see file](../xml_files/incomeStatementExample/is_lab_en.xml){target=_blank})  
+English linkbase XML file: ([see file](xml_files/incomeStatementExample/is_lab_en.xml){target=_blank})  
 ```{r is_example_lab_en, echo=FALSE}
-fn_CodeChunkOut(lang='xml', File = here::here('xml_files/incomeStatementExample','is_lab_en.xml'))
+fn_CodeChunkOut(lang='xml', File = here::here('docs','xml_files/incomeStatementExample/is_lab_en.xml'))
 ```
 
 ##### roleRef  
@@ -1487,7 +1487,7 @@ Since label link is a resource link, it does not have a root element, it just li
 ##### Label Resources  
 Table showing label resource declarations:
 ```{r is_lab_network, echo=FALSE}
-lab_en <- xml2::read_xml(here::here('xml_files/incomeStatementExample','is_lab_en.xml')) %>% 
+lab_en <- xml2::read_xml(here::here('docs','xml_files/incomeStatementExample/is_lab_en.xml')) %>% 
   xml2::xml_find_all('.//*[local-name()="label"]') %>%
   map(function(x) {
     c(tag=xml2::xml_name(x), xml2::xml_attrs(x), Label=xml2::xml_text(x))
@@ -1508,7 +1508,7 @@ knitr::kable('html', escape =T) %>% kableExtra::kable_classic() %>%
 
 _Notes_  
 
-* Arabic Labels are not shown here due to encoding issues, please see file [here](../xml_files/incomeStatementExample/is_lab_ar.xml).  
+* Arabic Labels are not shown here due to encoding issues, please see file [here](xml_files/incomeStatementExample/is_lab_ar.xml).  
 * `@lang` is used to specify the language of the label, this will help switching between label languages in any XBRL processor.  
 * `@role` is used to specify label role, one concept can have many labels but each label should have unique label role.  
 
@@ -1542,15 +1542,15 @@ In addition to the above, XBRL Dimensions Specifications defines the following r
 
 In our example, definition linkbase contains only dimensional relationship to create the income statement table with Product And Service dimensions.  
 
-Definition linkbase XML file:([see file](../xml_files/incomeStatementExample/is_def.xml){target=_blank})  
+Definition linkbase XML file:([see file](xml_files/incomeStatementExample/is_def.xml){target=_blank})  
 ```{r is_example_def_link, echo=FALSE}
-fn_CodeChunkOut(lang='xml', File = here::here('xml_files/incomeStatementExample','is_def.xml'))
+fn_CodeChunkOut(lang='xml', File = here::here('docs','xml_files/incomeStatementExample/is_def.xml'))
 ```
   
 ##### roleRef and arcroleRef  
 Element `<roleRef>` references the `<roleType>` declaration in the schema and is repeated for each `roleType` declared, following is the `roleRef`` from our example:  
 ```{r is_def_roleType, echo=FALSE}
-is_def <- xml2::read_xml(here::here('xml_files/incomeStatementExample','is_def.xml'))
+is_def <- xml2::read_xml(here::here('docs','xml_files/incomeStatementExample/is_def.xml'))
 
 roleRef <- xml2::xml_find_all(is_def,'.//*[local-name()="roleRef" or local-name()="arcroleRef"]') %>%
   map(function(x) {
@@ -1617,12 +1617,12 @@ knitr::kable(col.names = c(paste0('Concept Label', kableExtra::footnote_marker_s
 ```
 
 #### Instance Document  
-Instance document is where current report data is reported using XBRL syntax ([see section 3.7.3.4](#ins-doc)). In our example we can analyze the components of our instance document as follows:([see instance file](../xml_files/incomeStatementExample/instance.xml){target=_blank})  
+Instance document is where current report data is reported using XBRL syntax ([see section 3.7.3.4](#ins-doc)). In our example we can analyze the components of our instance document as follows:([see instance file](xml_files/incomeStatementExample/instance.xml){target=_blank})  
 
 ##### References  
 In our example, the instance document has only on reference `<schemaRef>`, whih is a mandatory element that must exist atleast once as child to `<xbrl>` element.
 ```{r example_inst_doc, echo=FALSE}
-inst <- xml2::read_xml(here::here('xml_files/incomeStatementExample','instance.xml'))
+inst <- xml2::read_xml(here::here('docs','xml_files/incomeStatementExample/instance.xml'))
 
 refs <- xml2::xml_find_all(inst,'.//*[contains(local-name(), "Ref")]') %>%
   map(function(x) {
@@ -1876,12 +1876,12 @@ Table linkbase uses link syntax to define a table element, then links that table
 </div>
 
 
-Following is a table linkbase that creates a table from the Income Statement example, the table memics exactly the income statement:([see Table Linkbase file](../xml_files/incomeStatementExample/is_tab.xml){target=_blank}) 
+Following is a table linkbase that creates a table from the Income Statement example, the table memics exactly the income statement:([see Table Linkbase file](xml_files/incomeStatementExample/is_tab.xml){target=_blank}) 
 ```{r tab_lb, echo=FALSE} 
-fn_CodeChunkOut(lang = 'XML', File = here::here('xml_files', 'incomeStatementExample/is_tab.xml'))
+fn_CodeChunkOut(lang = 'XML', File = here::here('docs','xml_files/incomeStatementExample/is_tab.xml'))
 ```
 
-When the `income statement instance` is loaded by arelle and a table is rendered as HTML, it the output is [here](../xml_files/incomeStatementExample/output-table.html){target=_blank}.  
+When the `income statement instance` is loaded by arelle and a table is rendered as HTML, it the output is [here](xml_files/incomeStatementExample/output-table.html){target=_blank}.  
 
 ### Inline XBRL (iXBRL)  
 
