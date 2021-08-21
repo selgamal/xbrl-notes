@@ -6,5 +6,6 @@ rmarkdown-2.0.pdf
 drafts
 codeFile_1.R
 .presentation
-xml_files/incomeStatementExample/is_lab_ar_old.xml
-xml_files/incomeStatementExample/.ifrs_base
+.xml_files
+docs/xml_files/incomeStatementExample/is_lab_ar_old.xml
+docs/xml_files/incomeStatementExample/.ifrs_base
