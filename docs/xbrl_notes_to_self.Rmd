@@ -322,7 +322,7 @@ xml_out_tbl_1 <- here::here('xml_files','xml_out.xml')
 invisible(xml2::write_xml(xml_root, xml_out_tbl_1))
 ```
 
-The resulting XML file looks like this:([see file](../xml_files/xml_out.xml){target=_blank})  
+The resulting XML file looks like this:([see file](xml_files/xml_out.xml){target=_blank})  
 ```{r example_1_show_xml, echo=FALSE}
 # read and display the XML file
 output <- fn_CodeChunkOut(lang = "XML", File = xml_out_tbl_1)
