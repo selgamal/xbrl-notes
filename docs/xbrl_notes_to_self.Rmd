@@ -1292,7 +1292,7 @@ Note that the root element is `<linkbase>`, which can have only four types of ch
 **The presentation linkbase relevant components can be analyzed as follows:**  
 
 ##### roleRef  
-Element `<roleRef>` references the `<roleType>` declaration in the schema and is repeated for each `roleType` declared, following is the `roleRef`` from our example:  
+Element `<roleRef>` references the `<roleType>` declaration in the schema and is repeated for each `roleType` declared, following is the `roleRef` from our example:  
 ```{r is_pre_roleType, echo=FALSE}
 is_pre <- xml2::read_xml(here::here('docs','xml_files/incomeStatementExample/is_pre.xml'))
 
@@ -1675,8 +1675,8 @@ xunits <- xml2::xml_find_all(inst,'.//*[local-name()="unit"]') %>%
     map(function(x) {
     c(tag=xml2::xml_name(x), xml2::xml_attrs(x), 
       measure=as.character(xml2::xml_find_first(x, './*[local-name()="measure"]/text()')),
-      `Divide Numerator` = as.character(xml_find_first(x, './/*[local-name()="unitNumerator"]/*[local-name()="measure"]/text()')),
-      `Divide Denominator`=as.character(xml_find_first(x, './/*[local-name()="unitDenominator"]/*[local-name()="measure"]/text()'))
+      `Divide Numerator` = as.character(xml2::xml_find_first(x, './/*[local-name()="unitNumerator"]/*[local-name()="measure"]/text()')),
+      `Divide Denominator`=as.character(xml2::xml_find_first(x, './/*[local-name()="unitDenominator"]/*[local-name()="measure"]/text()'))
       
       )
   }) %>% bind_rows()
