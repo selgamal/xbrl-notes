@@ -11,3 +11,7 @@ docs/xml_files/incomeStatementExample/is_lab_ar_old.xml
 docs/xml_files/incomeStatementExample/.ifrs_base
 docs/.xbrl_notes_to_self.Rmd
 docs/.xbrl_notes_to_self.nb.html
+.Rprofile
+R
+XBRL_notes.Rproj
+docs/images
