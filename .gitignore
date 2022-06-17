@@ -17,4 +17,5 @@ XBRL_notes.Rproj
 docs/images
 index.Rmd
 notes-on-xbrl-specs.Rmd
-.old_xbrl_notes_to_self.nb.html
+docs/notes-on-xbrl-specs.Rmd
+xbrl-notes.Rproj
